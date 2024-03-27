@@ -3,7 +3,21 @@
 there is a many-to-many relationship between `PostEntity` and `UserEntity`
 the `UserEntity` extends the shared `UserEntity` which extends `BasicEntity`
 
-when add ing `id` to either `UserEntity` or the shared `UserEntity`, 
+in src/api/posts/posts.service.ts:
+
+```
+  create(data: PostEntity, userId: string) {
+    return this.repo.insert({
+      ...data,
+      user: { id: userId },
+              ^
+              | ----- Object literal may only specify known properties, and 'id' does not exist in type '(() => string) | _QueryDeepPartialEntity<UserEntity>'.ts(2353)
+
+    });
+  }
+```
+
+when adding `id` to either `UserEntity` or the shared `UserEntity`, 
 or making the shared UserEntity doesn't extend from `BasicEntity` the issue disappears
 
 ```
@@ -40,23 +54,9 @@ export class PostEntity extends BasicEntity {
 
 
 
-in src/api/posts/posts.service.ts
-
-```
-  create(data: PostEntity, userId: string) {
-    return this.repo.insert({
-      ...data,
-      user: { id: userId },
-              ^
-              | ----- Object literal may only specify known properties, and 'id' does not exist in type '(() => string) | _QueryDeepPartialEntity<UserEntity>'.ts(2353)
-
-    });
-  }
-```
-
-
 
 
 # reproduction
 
-run `npm i` then `npm start`
+run `npm i` then `npm start`,
+in app.module.ts add "database info"
